@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  laravel:
+    build: ./laravel-backend
+    container_name: laravel
+    depends_on:
+      - python-flask
+    ports:
+      - "8000:8000"
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+  python-flask:
+    build: ./python-embedding-service
+    container_name: python-flask
+    ports:
+      - "5001:5001"
+
+  llama:
+    image: ghcr.io/ollama/ollama:latest
+    container_name: llama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./llama-model:/models
