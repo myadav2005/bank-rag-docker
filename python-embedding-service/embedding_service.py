@@ -4,6 +4,10 @@ from sentence_transformers import SentenceTransformer
 app = Flask(__name__)
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({"status": "ok", "service": "embedding", "model": "all-MiniLM-L6-v2"})
+
 @app.route('/embed', methods=['POST'])
 def embed_text():
     data = request.json

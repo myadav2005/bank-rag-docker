@@ -1,6 +1,6 @@
 <?php
 
-$ch = curl_init('http://localhost:8000/api/ask');
+$ch = curl_init('http://localhost:8000/api/test/ask');
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['query' => 'What is my last transaction?']));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

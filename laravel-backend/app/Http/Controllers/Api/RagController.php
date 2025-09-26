@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Response;
 
 class RagController extends Controller
 {
@@ -14,7 +15,7 @@ class RagController extends Controller
         $query = $request->input('query');
 
         if (!$query) {
-            return response()->json(['error' => 'Query is required'], 400);
+            return Response::json(['error' => 'Query is required'], 400);
         }
 
         // Call Python service for embedding
@@ -23,7 +24,7 @@ class RagController extends Controller
         ]);
 
         if (!$embeddingResponse->ok()) {
-            return response()->json(['error' => 'Embedding service failed'], 500);
+            return Response::json(['error' => 'Embedding service failed'], 500);
         }
 
         $embedding = $embeddingResponse->json()['embedding'];
@@ -36,15 +37,16 @@ class RagController extends Controller
 
         // Call LLaMA model
         $llmResponse = Http::post('http://llama:11434/api/generate', [
-            'model' => 'llama2',
-            'prompt' => "Answer the question: {$query}\nUse these transactions as context: " . json_encode($transactions)
+            'model' => 'llama3.2:1b',
+            'prompt' => "Answer the question: {$query}\nUse these transactions as context: " . json_encode($transactions),
+            'stream' => false
         ]);
 
         if (!$llmResponse->ok()) {
-            return response()->json(['error' => 'LLM service failed'], 500);
+            return Response::json(['error' => 'LLM service failed'], 500);
         }
 
-        return response()->json([
+        return Response::json([
             'answer' => $llmResponse->json()['response']
         ]);
     }

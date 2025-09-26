@@ -1,30 +1,61 @@
-version: '3.9'
 services:
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: postgres
+    environment:
+      POSTGRES_DB: bankrag
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/pgvector_setup.sql:/docker-entrypoint-initdb.d/pgvector_setup.sql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   laravel:
     build: ./laravel-backend
     container_name: laravel
     depends_on:
-      - python-flask
+      postgres:
+        condition: service_healthy
+      python-flask:
+        condition: service_started
     ports:
       - "8000:8000"
     environment:
       DB_CONNECTION: pgsql
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_DATABASE: ${DB_DATABASE}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: bankrag
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+    restart: unless-stopped
 
   python-flask:
     build: ./python-embedding-service
     container_name: python-flask
     ports:
       - "5001:5001"
-
+    restart: unless-stopped
+      
   llama:
-    image: ghcr.io/ollama/ollama:latest
+    image: ollama/ollama:latest
     container_name: llama
     ports:
       - "11434:11434"
     volumes:
-      - ./llama-model:/models
+      - ollama_data:/root/.ollama
+    pull_policy: missing
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  ollama_data:
+    driver: local

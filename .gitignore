@@ -9,6 +9,47 @@
 /storage/framework/sessions
 /storage/framework/views
 
+# Laravel Backend Specific
+laravel-backend/vendor/
+laravel-backend/node_modules/
+laravel-backend/public/hot
+laravel-backend/public/storage
+laravel-backend/storage/*.key
+laravel-backend/storage/logs/*.log
+laravel-backend/bootstrap/cache/*.php
+laravel-backend/.env
+laravel-backend/.env.backup
+laravel-backend/.phpunit.result.cache
+
+# Python
+python-embedding-service/__pycache__/
+python-embedding-service/*.pyc
+python-embedding-service/venv/
+python-embedding-service/.env
+
+# Docker
+.docker/
+docker-compose.override.yml.local
+.env.docker
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Models (uncomment if excluding large files)
+# llama-model/
+# *.bin
+# *.gguf
+
 # Python
 /python-embedding-service/__pycache__
 /python-embedding-service/*.pyc
